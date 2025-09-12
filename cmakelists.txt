@@ -10,6 +10,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC
     message(FATAL_ERROR "This project is meant to be compiled with Clang.")
 endif()
 
+
 # Add the executable
-add_executable(Moonlight src/moonlight.cpp
-)
+add_executable(Moonlight src/moonlight.cpp)
