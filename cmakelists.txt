@@ -1,15 +1,76 @@
-cmake_minimum_required(VERSION 4.0.0)
-project(Moonlight CXX)
+cmake_minimum_required(VERSION 3.22)
+project(Moonlight LANGUAGES C CXX)
 
-# Use C++20
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Use Clang by default
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    message(FATAL_ERROR "This project is meant to be compiled with Clang.")
+# -------------------------------
+#  Lua library (include it all cuz im fucking retarded)
+# -------------------------------
+set(LUA_SOURCES
+    src/library/Lua54/lapi.c
+    src/library/Lua54/lauxlib.c
+    src/library/Lua54/lbaselib.c
+    src/library/Lua54/lcode.c
+    src/library/Lua54/lcorolib.c
+    src/library/Lua54/lctype.c
+    src/library/Lua54/ldblib.c
+    src/library/Lua54/ldebug.c
+    src/library/Lua54/ldo.c
+    src/library/Lua54/ldump.c
+    src/library/Lua54/lfunc.c
+    src/library/Lua54/lgc.c
+    src/library/Lua54/linit.c
+    src/library/Lua54/liolib.c
+    src/library/Lua54/llex.c
+    src/library/Lua54/lmathlib.c
+    src/library/Lua54/lmem.c
+    src/library/Lua54/loadlib.c
+    src/library/Lua54/lobject.c
+    src/library/Lua54/lopcodes.c
+    src/library/Lua54/loslib.c
+    src/library/Lua54/lparser.c
+    src/library/Lua54/lstate.c
+    src/library/Lua54/lstring.c
+    src/library/Lua54/lstrlib.c
+    src/library/Lua54/ltable.c
+    src/library/Lua54/ltablib.c
+    src/library/Lua54/ltm.c
+    src/library/Lua54/lundump.c
+    src/library/Lua54/lutf8lib.c
+    src/library/Lua54/lvm.c
+    src/library/Lua54/lzio.c
+)
+
+add_library(lua STATIC ${LUA_SOURCES})
+target_include_directories(lua PUBLIC src/library/Lua54)
+
+# -------------------------------
+#  Engine sources
+# -------------------------------
+file(GLOB_RECURSE ALL_SRC
+    "src/*.c"
+    "src/*.cpp"
+    "src/*.h"
+    "src/*.hpp"
+)
+
+# Exclude Lua sources from engine build (already added above)
+list(FILTER ALL_SRC EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/src/library/Lua54/.*")
+
+add_executable(Moonlight ${ALL_SRC})
+
+# -------------------------------
+# Link dependencies
+# -------------------------------
+target_link_libraries(Moonlight PRIVATE lua)
+
+# ✅ Force normal CRT linking (no -nostdlib nonsense)
+if (MSVC)
+    # MSVC runtime flags (debug uses MDd, release uses MD by default)
+    target_compile_options(Moonlight PRIVATE /utf-8)
+else()
+    # Clang/LLVM on Windows
+    target_compile_options(Moonlight PRIVATE -Wall -Wextra)
+    target_link_options(Moonlight PRIVATE -Xlinker /subsystem:console)
 endif()
-
-
-# Add the executable
-add_executable(Moonlight src/moonlight.cpp)
