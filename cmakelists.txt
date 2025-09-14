@@ -60,10 +60,9 @@ else()
     target_compile_options(lua PRIVATE -Wno-unused-parameter -Wno-unused-function)
 endif()
 
-# -------------------------------
 # SDL3
-# -------------------------------
-# This should be the directory that contains the SDL3 folder
+
+# This should be the directory that contains the SDL3 folder (I hope)
 set(SDL3_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/include")
 set(SDL3_HEADERS_DIR "${SDL3_INCLUDE_DIR}/SDL3")
 set(SDL3_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/library/SDL3/x64")
@@ -76,11 +75,24 @@ set_target_properties(SDL3::SDL3 PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${SDL3_INCLUDE_DIR};${SDL3_HEADERS_DIR}"
 )
 
-# -------------------------------
-# Engine sources
-# -------------------------------
+# SDL_ttf (this basicly the same lol)
 
-# Alternatively, if you really want to use GLOB, do it like this:
+# This should be the directory that contains the SDL3 folder (I hope)
+set(SDLTTF_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/include")
+set(SDLTTF_HEADERS_DIR "${SDLTTF_INCLUDE_DIR}/SDL_ttf")
+set(SDLTTF_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/library/SDL_ttf/x64")
+
+add_library(SDLTTF::SDLTTF SHARED IMPORTED)
+
+set_target_properties(SDLTTF::SDLTTF PROPERTIES
+    IMPORTED_LOCATION "${SDLTTF_LIB_DIR}/SDL3_ttf.dll"
+    IMPORTED_IMPLIB "${SDLTTF_LIB_DIR}/SDL3_ttf.lib"
+    INTERFACE_INCLUDE_DIRECTORIES "${SDLTTF_INCLUDE_DIR};$SDLTTF_HEADERS_DIR}"
+)
+
+
+# Engine sources
+
 file(GLOB_RECURSE ENGINE_SOURCES
     "src/*.cpp"
     "src/*.c"
@@ -92,14 +104,12 @@ list(FILTER ENGINE_SOURCES EXCLUDE REGEX ".*/src/library/Lua54/.*")
 
 add_executable(Moonlight ${ENGINE_SOURCES})
 
-# -------------------------------
 # Link dependencies and include directories
-# -------------------------------
+
 target_link_libraries(Moonlight PRIVATE lua SDL3::SDL3)
 
-# -------------------------------
 # Compiler / linker options
-# -------------------------------
+
 if(MSVC)
     target_compile_options(Moonlight PRIVATE /W4 /WX /utf-8)
     target_link_options(Moonlight PRIVATE /DEBUG)
@@ -113,9 +123,8 @@ if(WIN32)
     target_compile_definitions(Moonlight PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
-# -------------------------------
 # Copy SDL3.dll to build output
-# -------------------------------
+
 add_custom_command(TARGET Moonlight POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SDL3_LIB_DIR}/SDL3.dll"
@@ -123,11 +132,19 @@ add_custom_command(TARGET Moonlight POST_BUILD
     COMMENT "Copying SDL3.dll to output directory"
 )
 
+# Copy SDL3_ttf.dll to build output
+add_custom_command(TARGET Moonlight POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SDLTTF_LIB_DIR}/SDL3_ttf.dll"
+        $<TARGET_FILE_DIR:Moonlight>
+    COMMENT "Copying SDL3_ttf.dll to output directory"
+)
+
 # Install target (optional)
 install(TARGETS Moonlight
     RUNTIME DESTINATION bin
 )
 
-install(FILES "${SDL3_LIB_DIR}/SDL3.dll"
+install(FILES "${SDL3_LIB_DIR}/SDL3.dll" "${SDLTTF_LIB_DIR}/SDL3_ttf.dll"
     DESTINATION bin
 )
