@@ -1,5 +1,5 @@
 #pragma once
 
-// Runs the engine client (main loop).
-// Returns exit code.
+// Runs the engine client.
+
 int RunClient();
