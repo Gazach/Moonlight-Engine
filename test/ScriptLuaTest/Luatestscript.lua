@@ -1,0 +1,5 @@
+print("Hello from Lua")
+Logger("Lua script executed successfully.")
+LoggerDebug("Lua script executed successfully.")
+LoggerWarning("Lua script executed successfully.")
+LoggerError("Lua script executed successfully.")

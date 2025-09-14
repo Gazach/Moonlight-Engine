@@ -1,8 +1,11 @@
 
 #include "core/lua/bindings.h"
+#include "client/client.hpp"
 #include <lua.hpp>
 
 int main() {
+    RunClient();
+
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 

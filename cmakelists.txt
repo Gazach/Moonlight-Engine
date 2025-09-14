@@ -3,9 +3,13 @@ project(Moonlight LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Make builds reproducible
+set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
 
 # -------------------------------
-#  Lua library (include it all cuz im fucking retarded)
+# Lua library
 # -------------------------------
 set(LUA_SOURCES
     src/library/Lua54/lapi.c
@@ -45,32 +49,85 @@ set(LUA_SOURCES
 add_library(lua STATIC ${LUA_SOURCES})
 target_include_directories(lua PUBLIC src/library/Lua54)
 
-# -------------------------------
-#  Engine sources
-# -------------------------------
-file(GLOB_RECURSE ALL_SRC
-    "src/*.c"
-    "src/*.cpp"
-    "src/*.h"
-    "src/*.hpp"
+# Add compiler-specific flags for Lua
+target_compile_definitions(lua PRIVATE 
+    LUA_BUILD_AS_DLL=0
 )
 
-# Exclude Lua sources from engine build (already added above)
-list(FILTER ALL_SRC EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/src/library/Lua54/.*")
-
-add_executable(Moonlight ${ALL_SRC})
-
-# -------------------------------
-# Link dependencies
-# -------------------------------
-target_link_libraries(Moonlight PRIVATE lua)
-
-# ✅ Force normal CRT linking (no -nostdlib nonsense)
-if (MSVC)
-    # MSVC runtime flags (debug uses MDd, release uses MD by default)
-    target_compile_options(Moonlight PRIVATE /utf-8)
+if(MSVC)
+    target_compile_options(lua PRIVATE /wd4244 /wd4101 /wd4267 /wd4310)
 else()
-    # Clang/LLVM on Windows
-    target_compile_options(Moonlight PRIVATE -Wall -Wextra)
+    target_compile_options(lua PRIVATE -Wno-unused-parameter -Wno-unused-function)
+endif()
+
+# -------------------------------
+# SDL3
+# -------------------------------
+# This should be the directory that contains the SDL3 folder
+set(SDL3_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/include")
+set(SDL3_HEADERS_DIR "${SDL3_INCLUDE_DIR}/SDL3")
+set(SDL3_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/library/SDL3/x64")
+
+add_library(SDL3::SDL3 SHARED IMPORTED)
+
+set_target_properties(SDL3::SDL3 PROPERTIES
+    IMPORTED_LOCATION "${SDL3_LIB_DIR}/SDL3.dll"
+    IMPORTED_IMPLIB "${SDL3_LIB_DIR}/SDL3.lib"
+    INTERFACE_INCLUDE_DIRECTORIES "${SDL3_INCLUDE_DIR};${SDL3_HEADERS_DIR}"
+)
+
+# -------------------------------
+# Engine sources
+# -------------------------------
+
+# Alternatively, if you really want to use GLOB, do it like this:
+file(GLOB_RECURSE ENGINE_SOURCES
+    "src/*.cpp"
+    "src/*.c"
+)
+# But note: This doesn't automatically update when files are added/removed
+
+# Exclude Lua sources (already built as static lib)
+list(FILTER ENGINE_SOURCES EXCLUDE REGEX ".*/src/library/Lua54/.*")
+
+add_executable(Moonlight ${ENGINE_SOURCES})
+
+# -------------------------------
+# Link dependencies and include directories
+# -------------------------------
+target_link_libraries(Moonlight PRIVATE lua SDL3::SDL3)
+
+# -------------------------------
+# Compiler / linker options
+# -------------------------------
+if(MSVC)
+    target_compile_options(Moonlight PRIVATE /W4 /WX /utf-8)
+    target_link_options(Moonlight PRIVATE /DEBUG)
+else()
+    target_compile_options(Moonlight PRIVATE -Wall -Wextra -Wpedantic -Werror)
     target_link_options(Moonlight PRIVATE -Xlinker /subsystem:console)
 endif()
+
+# Add platform-specific definitions
+if(WIN32)
+    target_compile_definitions(Moonlight PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+
+# -------------------------------
+# Copy SDL3.dll to build output
+# -------------------------------
+add_custom_command(TARGET Moonlight POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SDL3_LIB_DIR}/SDL3.dll"
+        $<TARGET_FILE_DIR:Moonlight>
+    COMMENT "Copying SDL3.dll to output directory"
+)
+
+# Install target (optional)
+install(TARGETS Moonlight
+    RUNTIME DESTINATION bin
+)
+
+install(FILES "${SDL3_LIB_DIR}/SDL3.dll"
+    DESTINATION bin
+)
