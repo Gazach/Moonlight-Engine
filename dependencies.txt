@@ -1,5 +1,14 @@
-dependencies :
+dependencies (2025/9/14):
 
 Clang/LLVM version 20.1.0
 Ninja version 1.12.1
 Cmake version 4.0.2
+
+IDE (if you wanna try edit the source code):
+
+VSCODE "any version"
+-Extention :
+>Clangd by LLVM
+>C/C++ by Microsoft
+>Cmake by twxs
+>Cmake Tools by Microsoft
