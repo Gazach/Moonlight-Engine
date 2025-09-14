@@ -1,5 +1,6 @@
 #include <SDL3/SDL.h>
 #include "../client/module/window.hpp"
+#include "drawshapes.hpp"
 #include <string>
 #include <stdexcept>
 
@@ -23,6 +24,18 @@ SDL_Color HexToColor(const std::string& hex) {
 
 // overload: draw rect with SDL_Color
 int DrawRect(int posX, int posY, int width, int height, SDL_Color color) {
+
+    int windowW, windowH;
+    SDL_GetCurrentRenderOutputSize(Window::GetRenderer(), &windowW, &windowH);
+
+    if (width == STRETCH) {
+        width = windowW - posX;
+    }
+    if (height == STRETCH) {
+        height = windowH - posY;
+    }
+
+
     SDL_FRect rect = { float(posX), float(posY), float(width), float(height) };
     SDL_SetRenderDrawColor(Window::GetRenderer(), color.r, color.g, color.b, color.a);
     return SDL_RenderFillRect(Window::GetRenderer(), &rect);

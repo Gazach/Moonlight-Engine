@@ -17,11 +17,13 @@ int OpenProjectManager() {
             }
         }
 
-        DrawRect(20, 20, 100, 50, "#151515ff");
+        DrawRect(20, 20, 100, 50, "#1e1e1eff");
         SDL_RenderClear(Window::GetRenderer());
 
-        DrawRect(0, 0, 100, 2000, "#ff4646ff");
-
+        DrawRect(0, 0, STRETCH, 50, "#151515ff");
+        DrawRect(0, 51, STRETCH, 1, "#434343ff");
+        DrawRect(0, 52, 320, STRETCH, "#151515ff");
+        DrawRect(321, 52, 1, STRETCH, "#434343ff");
         SDL_RenderPresent(Window::GetRenderer());
     }
 
