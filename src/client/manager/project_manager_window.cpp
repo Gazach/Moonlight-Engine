@@ -17,13 +17,13 @@ int OpenProjectManager() {
             }
         }
 
-        Panel(20, 20, 100, 50, "#1e1e1eff");
-        SDL_RenderClear(Window::GetRenderer());
-
-        Panel(0, 0, STRETCH, 50, "#151515ff");
-        Panel(0, 51, STRETCH, 1, "#434343ff");
-        Panel(0, 52, 320, STRETCH, "#151515ff");
-        Panel(321, 52, 1, STRETCH, "#434343ff");
+        Panel(20, 20, 200, 100, "#ff3939ff", 
+            PanelOptions()
+            .SetBorderOptions(PanelBorderOptions()
+            .SetEnabled(true)
+            .SetThickness(3)
+            .SetColor("#ffffffff")
+        ));
         
         SDL_RenderPresent(Window::GetRenderer());
     }
