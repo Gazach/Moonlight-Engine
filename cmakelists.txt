@@ -140,6 +140,27 @@ add_custom_command(TARGET Moonlight POST_BUILD
     COMMENT "Copying SDL3_ttf.dll to output directory"
 )
 
+#copying Client lua resources to output directory
+set(CLIENT_PROJECT_MANAGER_LUA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/src/client/manager")
+set(CLIENT_HELPER_LUA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/src/client/helper")
+set(CLIENT_EDITOR_LUA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/src/client/editor")
+
+# Target directory inside build
+set(RESOURCES_DIR "${CMAKE_BINARY_DIR}/resources")
+
+add_custom_target(copy_lua_scripts ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${RESOURCES_DIR}/manager
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CLIENT_PROJECT_MANAGER_LUA_SCRIPT} ${RESOURCES_DIR}/manager
+
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${RESOURCES_DIR}/helper
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CLIENT_HELPER_LUA_SCRIPT} ${RESOURCES_DIR}/helper
+
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${RESOURCES_DIR}/editor
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CLIENT_EDITOR_LUA_SCRIPT} ${RESOURCES_DIR}/editor
+
+    COMMENT "Copying Lua client scripts into build/resources"
+)
+
 # Install target (optional)
 install(TARGETS Moonlight
     RUNTIME DESTINATION bin

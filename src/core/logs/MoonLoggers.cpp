@@ -33,7 +33,7 @@ void Logger::Log(LogLevel level, const std::string& category, const std::string&
     std::cout 
         << "[" << GetTimestamp() << "] "
         << "[" << LevelToString(level) << "] "
-        << "(" << category << ") "
+        << "(" << category << ") : "
         << message 
         << std::endl;
 }
