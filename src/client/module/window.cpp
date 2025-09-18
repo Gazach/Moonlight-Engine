@@ -35,6 +35,15 @@ SDL_Renderer* GetRenderer() {
     return gRenderer;
 }
 
+void Clear(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
+    SDL_RenderClear(gRenderer);
+}
+
+void Present() {
+    SDL_RenderPresent(gRenderer);
+}
+
 void Shutdown() {
     if (gRenderer) SDL_DestroyRenderer(gRenderer);
     if (gWindow) SDL_DestroyWindow(gWindow);

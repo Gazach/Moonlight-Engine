@@ -1,4 +1,4 @@
-#include "../module/window.hpp"
+#include "module/window.hpp"
 #include <SDL3/SDL.h>
 
 int OpenEditorWindow() {

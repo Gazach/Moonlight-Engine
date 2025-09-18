@@ -1,7 +1,6 @@
 #include "client.hpp"
-#include "manager/project_manager_window.hpp"
+#include "project_manager_window.hpp"
 
-int RunClient() {
-    // For now, just open the project manager window
-    return OpenProjectManager();
+int RunClient(lua_State* L) {
+    return OpenProjectManager(L);
 }

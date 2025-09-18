@@ -13,6 +13,12 @@ SDL_Window* GetWindow();
 // Get the SDL_Renderer pointer
 SDL_Renderer* GetRenderer();
 
+// Clear the window with a color
+void Clear(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
+// Present the rendered content to the window
+void Present();
+
 // Destroy window and quit SDL
 void Shutdown();
 

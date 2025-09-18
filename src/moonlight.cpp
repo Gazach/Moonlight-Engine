@@ -6,11 +6,11 @@ int main() {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
-    // Register everything in one place
     RegisterAllLuaFunctions(L);
 
-    luaL_dofile(L, "test.lua");
-    lua_close(L);
+    // Instead of just running test.lua, open Project Manager
+    RunClient(L);
 
-    RunClient();
+    lua_close(L);
+    return 0;
 }

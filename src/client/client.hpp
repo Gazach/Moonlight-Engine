@@ -1,5 +1,5 @@
 #pragma once
-
+#include <lua.hpp>
 // Runs the engine client.
 
-int RunClient();
+int RunClient(lua_State* L);

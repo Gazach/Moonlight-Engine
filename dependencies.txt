@@ -12,3 +12,5 @@ VSCODE "any version"
 >C/C++ by Microsoft
 >Cmake by twxs
 >Cmake Tools by Microsoft
+
+OS : Windows (Because im broke as fuck to buy Apple device and too lazy to install linux)
