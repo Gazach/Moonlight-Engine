@@ -26,7 +26,7 @@ int OpenProjectManager(lua_State* L) {
         }
 
         // Clear window
-        Window::Clear(55, 55, 55, 255); //default gray background
+        Window::Clear(55.f, 55.f, 55.f, 255.f); //default gray background
 
         // Call Lua "UpdateUI()" every frame
         lua_getglobal(L, "update");
